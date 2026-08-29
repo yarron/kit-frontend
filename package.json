@@ -12,12 +12,15 @@
 		"dev": "next dev --port 3800",
 		"build": "next build",
 		"start": "next start --port 3800",
-		"check": "biome check --write ./src",
-		"format": "biome format --write ./src",
-		"lint": "biome lint ./src",
+		"check": "biome check --write ./src ./e2e",
+		"format": "biome format --write ./src ./e2e",
+		"lint": "biome lint ./src ./e2e",
 		"typecheck": "tsc --noEmit",
 		"codegen": "graphql-codegen",
-		"codegen:check": "graphql-codegen && git diff --exit-code --stat src/generated"
+		"codegen:check": "graphql-codegen && git diff --exit-code --stat src/generated",
+		"e2e": "E2E_SLOWMO=120 playwright test --headed",
+		"e2e:headless": "playwright test",
+		"e2e:report": "playwright show-report"
 	},
 	"dependencies": {
 		"@apollo/client": "^4.1.4",
@@ -33,6 +36,7 @@
 		"@biomejs/biome": "2.3.10",
 		"@graphql-codegen/cli": "^6.1.1",
 		"@graphql-codegen/client-preset": "^5.2.2",
+		"@playwright/test": "^1.62.1",
 		"@types/node": "^24.13.3",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
