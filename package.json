@@ -1,8 +1,8 @@
 {
-	"name": "nestjs-starter-kit-frontend",
+	"name": "kit-frontend",
 	"version": "1.0.0",
 	"private": true,
-	"description": "Next.js \u0444\u0440\u043e\u043d\u0442 \u043a \u0441\u0442\u0430\u0440\u0442\u0435\u0440\u0443: Apollo \u0447\u0435\u0440\u0435\u0437 BFF-\u043f\u0440\u043e\u043a\u0441\u0438, \u0431\u044d\u043a\u0435\u043d\u0434 \u043d\u0430\u0440\u0443\u0436\u0443 \u043d\u0435 \u0432\u044b\u0441\u0442\u0430\u0432\u043b\u0435\u043d",
+	"description": "Next.js frontend for NestJS starter kit",
 	"engines": {
 		"node": ">=24"
 	},

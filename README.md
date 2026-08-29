@@ -1,4 +1,4 @@
-# nestjs-starter-kit-frontend
+# kit-frontend
 
 Next.js 16 + Apollo. Ходит в бэкенд **только через свой серверный слой** —
 браузер адреса бэкенда не знает.
@@ -11,7 +11,7 @@ cp .env.local.example .env.local     # и подставь адрес бэкен
 pnpm dev                             # :3800
 ```
 
-Бэкенд должен быть поднят (`nestjs-starter-kit-backend`, `pnpm local` на :9800).
+Бэкенд должен быть поднят (`kit-backend`, `pnpm local` на :9800).
 
 ## Топология: почему браузер не ходит в бэкенд
 
