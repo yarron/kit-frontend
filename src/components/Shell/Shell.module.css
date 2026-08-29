@@ -1,0 +1,42 @@
+.shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 32px;
+}
+
+.brand {
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.nav {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+}
+
+.nav a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.nav a:hover {
+  color: var(--text);
+}
+
+.footer {
+  margin-top: 64px;
+  padding: 24px 0 48px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 13px;
+}
