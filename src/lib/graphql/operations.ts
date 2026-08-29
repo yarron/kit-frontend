@@ -1,18 +1,20 @@
-import { gql } from "@apollo/client";
+import { graphql } from "@/generated/gql";
 
 /**
- * ВСЕ операции приложения — в одном файле.
+ * ВСЕ операции приложения — в одном файле, и объявлены через `graphql()`,
+ * а не через `gql`.
  *
- * Это не про порядок: из этого файла строится allowlist BFF (см. allowlist.ts).
- * Операция, которой здесь нет, физически не пройдёт через прокси — а значит,
- * запрос, придуманный в браузерной консоли, до бэкенда не доедет.
+ * Разница принципиальная. `gql` возвращает просто документ: TypeScript про
+ * него ничего не знает, и тип ответа приходится писать руками — то есть
+ * ГАДАТЬ. `graphql()` — функция, сгенерированная из твоей схемы: она
+ * возвращает типизированный документ, и тип результата выводится из САМОГО
+ * запроса, поле в поле.
  *
- * Цена: новую операцию надо добавить сюда, иначе она молча не работает.
- * Это осознанный размен — «забыл добавить» ловится на первом же клике,
- * а открытый прокси не ловится вообще.
+ * Этот же файл — источник allowlist'а BFF (см. allowlist.ts). Операция,
+ * которой здесь нет, физически не пройдёт через прокси.
  */
 
-export const ORDERS_LIST = gql`
+export const ORDERS_LIST = graphql(`
   query OrdersList($payload: FilterGetInput!) {
     orders(payload: $payload) {
       items {
@@ -30,9 +32,9 @@ export const ORDERS_LIST = gql`
       }
     }
   }
-`;
+`);
 
-export const USERS_LIST = gql`
+export const USERS_LIST = graphql(`
   query UsersList($payload: FilterGetInput!) {
     users(payload: $payload) {
       items {
@@ -47,9 +49,9 @@ export const USERS_LIST = gql`
       }
     }
   }
-`;
+`);
 
-export const ORDER_CREATE = gql`
+export const ORDER_CREATE = graphql(`
   mutation OrderCreate($payload: OrderCreateInput!) {
     orderCreate(payload: $payload) {
       _id
@@ -57,4 +59,4 @@ export const ORDER_CREATE = gql`
       totalUsd
     }
   }
-`;
+`);

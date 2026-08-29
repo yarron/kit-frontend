@@ -14,7 +14,13 @@ const config: CodegenConfig = {
   schema: [
     {
       "http://localhost:9800/gql": {
-        headers: { "x-api-key": process.env.BACKEND_API_KEY ?? "local-admin-key" },
+        headers: {
+          "x-api-key": process.env.BACKEND_API_KEY ?? "local-admin-key",
+          // Бэкенд закрыт service-token'ом — codegen тоже клиент и тоже
+          // обязан его прислать. Иначе схема не читается, а сообщение
+          // («Invalid service token») выглядит как проблема codegen.
+          "x-service-token": process.env.BACKEND_SERVICE_TOKEN ?? "dev-service-token",
+        },
       },
     },
   ],

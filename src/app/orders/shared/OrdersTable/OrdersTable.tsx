@@ -3,29 +3,34 @@
 import { useQuery } from "@apollo/client/react";
 import { useState } from "react";
 
+import {
+  FilterFieldTypeEnum,
+  FilterOperationEnum,
+  OrderStatusEnum,
+  type OrdersListQuery,
+  SortDirectionEnum,
+} from "@/generated/gql/graphql";
 import { ORDERS_LIST } from "@/lib/graphql/operations";
 
 import styles from "./OrdersTable.module.css";
 
 const TAKE = 10;
 
-interface Order {
-  _id: string;
-  userId: string;
-  totalUsd: number;
-  status: string;
-  providerRef: string | null;
-  createdAt: string;
-}
+/**
+ * Тип строки выводится ИЗ ЗАПРОСА, а не пишется рядом с ним.
+ *
+ * Раньше здесь лежал руками написанный `interface Order` — и он врал
+ * в двух местах сразу: `status` был `string` (а это enum), `providerRef`
+ * объявлен обязательным (а схема говорит «может отсутствовать»).
+ * TypeScript верил интерфейсу, потому что больше верить было нечему.
+ */
+type OrderRow = OrdersListQuery["orders"]["items"][number];
 
-interface OrdersListData {
-  orders: {
-    items: Order[];
-    meta: { skip: number; take: number; total: number };
-  };
-}
-
-const STATUSES = ["", "Pending", "Queued", "Fulfilled", "Failed", "Cancelled"];
+/** Значения фильтра — из схемы, а не строковые литералы. */
+const STATUSES = [
+  { value: "", label: "Все статусы" },
+  ...Object.values(OrderStatusEnum).map((value) => ({ value, label: value })),
+];
 
 const usd = (n: number) =>
   n.toLocaleString("ru-RU", {
@@ -37,24 +42,27 @@ const usd = (n: number) =>
  * Таблица поверх generic-контракта бэкенда.
  *
  * Пагинация и фильтр собираются в тот же `FilterGetInput`, что принимают ВСЕ
- * списки бэкенда — поэтому этот компонент переносится на любую другую
- * коллекцию заменой запроса и колонок, без единой правки на сервере.
+ * списки бэкенда — поэтому компонент переносится на любую другую коллекцию
+ * заменой запроса и колонок, без единой правки на сервере.
  */
 export function OrdersTable() {
   const [skip, setSkip] = useState(0);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState<OrderStatusEnum | "">("");
 
-  const { data, loading, error } = useQuery<OrdersListData>(ORDERS_LIST, {
+  // Дженерик не нужен: тип выводится из типизированного документа.
+  // Ошибка в имени переменной или в значении enum — ошибка компиляции,
+  // а не 400 в рантайме.
+  const { data, loading, error } = useQuery(ORDERS_LIST, {
     variables: {
       payload: {
         paginate: { skip, take: TAKE },
-        sorts: [{ columnName: "createdAt", direction: "Desc" }],
+        sorts: [{ columnName: "createdAt", direction: SortDirectionEnum.Desc }],
         filters: status
           ? [
               {
                 columnName: "status",
-                operation: "Equal",
-                type: "String",
+                operation: FilterOperationEnum.Equal,
+                type: FilterFieldTypeEnum.String,
                 value: [status],
               },
             ]
@@ -66,8 +74,17 @@ export function OrdersTable() {
     fetchPolicy: "cache-and-network",
   });
 
-  const items = data?.orders.items ?? [];
-  const total = data?.orders.meta.total ?? 0;
+  /**
+   * Apollo типизирует `data` как ЧАСТИЧНЫЕ данные, и это не придирка:
+   * из кэша действительно может прийти объект без части полей.
+   *
+   * Поэтому вместо приведения типом отбираем строки, пригодные к отрисовке.
+   * Рукописный интерфейс просто утверждал, что такого не бывает.
+   */
+  const items = (data?.orders?.items ?? []).filter(
+    (row): row is OrderRow => typeof row?._id === "string",
+  );
+  const total = data?.orders?.meta?.total ?? 0;
 
   if (error) {
     return (
@@ -87,15 +104,15 @@ export function OrdersTable() {
           className={styles.select}
           value={status}
           onChange={(e) => {
-            setStatus(e.target.value);
+            setStatus(e.target.value as OrderStatusEnum | "");
             // Сбрасываем страницу: иначе фильтр применён, а ты на пятой
             // странице результата, которого больше нет.
             setSkip(0);
           }}
         >
           {STATUSES.map((s) => (
-            <option key={s || "all"} value={s}>
-              {s || "Все статусы"}
+            <option key={s.value || "all"} value={s.value}>
+              {s.label}
             </option>
           ))}
         </select>
