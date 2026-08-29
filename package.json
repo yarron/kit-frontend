@@ -1,6 +1,8 @@
 {
 	"name": "kit-frontend",
 	"version": "1.0.0",
+	"author": "Yaroslaw Romanov <tech@architech.nyc> (https://github.com/yarron)",
+	"license": "UNLICENSED",
 	"private": true,
 	"description": "Next.js frontend for NestJS starter kit",
 	"engines": {
